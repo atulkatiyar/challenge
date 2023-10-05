@@ -4,8 +4,6 @@ import com.dws.challenge.domain.Account;
 import com.dws.challenge.dto.AmountTransferRequest;
 import com.dws.challenge.exception.AccountNotFoundException;
 import com.dws.challenge.exception.DuplicateAccountIdException;
-import com.dws.challenge.service.NotificationService;
-import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
@@ -36,8 +34,9 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
 
     /**
      * API method to transfer money between accounts
+     *
      * @param amountTransferRequest {@link AmountTransferRequest}
-     * @throws Account Not Found Exception
+     * @throws AccountNotFoundException Not Found Exception
      */
     @Override
     public synchronized void transferAmount(AmountTransferRequest amountTransferRequest)
@@ -45,10 +44,10 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
 
         Account accountFrom = accounts.get(amountTransferRequest.getFromAccountId());
         Account accountTo = accounts.get(amountTransferRequest.getToAccountId());
-        if(accountFrom == null) {
+        if (accountFrom == null) {
             throw new AccountNotFoundException("Account id " + amountTransferRequest.getFromAccountId() + " not found");
         }
-        if(accountTo == null) {
+        if (accountTo == null) {
             throw new AccountNotFoundException("Account id " + amountTransferRequest.getToAccountId() + " not found");
         }
         accountFrom.withdrawAmount(amountTransferRequest.getAmount());
