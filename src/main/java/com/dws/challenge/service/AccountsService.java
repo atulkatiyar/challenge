@@ -40,6 +40,7 @@ public class AccountsService {
      */
     public void transferAmount(AmountTransferRequest amountTransferRequest) {
         this.accountsRepository.transferAmount(amountTransferRequest);
+        //Sending the notification after successfully fund transfer
         this.notificationService.notifyAboutTransfer(this.getAccountsRepository().getAccount(amountTransferRequest.getFromAccountId()),
                 amountTransferRequest.getAmount() + TRANSFER_DESCRIPTION_WITHDRAWAL_MSG);
         this.notificationService.notifyAboutTransfer(this.getAccountsRepository().getAccount(amountTransferRequest.getFromAccountId()),

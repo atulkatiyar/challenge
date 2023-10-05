@@ -2,6 +2,7 @@ package com.dws.challenge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.dws.challenge.repository.AccountsRepository;
 import com.dws.challenge.service.AccountsService;
 import com.dws.challenge.service.EmailNotificationService;
 import com.dws.challenge.service.NotificationService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,9 +40,14 @@ class AccountsServiceTest {
   @Autowired
   private NotificationService notificationService;
 
+  @BeforeEach
+  void prepareMockMvc() {
+    accountsService.getAccountsRepository().clearAccounts();
+  }
+
   @Test
   void addAccount() {
-    accountsRepository.clearAccounts();
+    //accountsRepository.clearAccounts();
     Account account = new Account("Id-123");
     account.setBalance(new BigDecimal(1000));
     this.accountsService.createAccount(account);
@@ -64,23 +71,26 @@ class AccountsServiceTest {
 
   @Test
   void testTransferAmount() {
-    accountsRepository.clearAccounts();
     BigDecimal amountToTransfer = new BigDecimal(50);
     List<AmountTransferRequest> amountTransferRequests = new ArrayList<>();
     this.accountsService.createAccount(new Account("Id-123", new BigDecimal(500000)));
     this.accountsService.createAccount(new Account("Id-456"));
 
-    // Here I am creating 10K account transfer request to check if it will work on multithreaded environment
+    // Here I am creating 10000 number of account transfer request to check if it will work on multi threaded environment
     for (int i = 0; i < 10000; i++) {
       amountTransferRequests.add(AmountTransferRequest.builder().fromAccountId("Id-123")
               .amount(amountToTransfer).toAccountId("Id-456").build());
     }
 
-    // After creating 10K account transfer request on the same from and to account,
+    // After creating 10K account transfer request for the same from and to account,
     // I am trying to execute all the requests in parallel using parallel streams
+    // Took 500000 in source account and 0 balance in destination account.
     amountTransferRequests
             .parallelStream()
             .forEach(amountTransferRequest -> accountsService.transferAmount(amountTransferRequest));
+
+    // After completion of all the request, the result should be :-
+    // Zero balance in Source account i.e. Id-123 and 500000 in Id-456 which is asserted below
     assertThat(accountsService.getAccount("Id-123").getBalance()).isEqualTo(BigDecimal.ZERO);
     assertThat(accountsService.getAccount("Id-456").getBalance()).isEqualTo(new BigDecimal(500000));
 
@@ -88,7 +98,6 @@ class AccountsServiceTest {
 
   @Test
   void transferAmountWithNotEnoughBalance() {
-    accountsRepository.clearAccounts();
     BigDecimal amountToTransfer = new BigDecimal(200);
     this.accountsService.createAccount(new Account("Id-123", new BigDecimal(100)));
     this.accountsService.createAccount(new Account("Id-456"));
@@ -104,7 +113,6 @@ class AccountsServiceTest {
 
   @Test
   void transferAmountWithInvalidAMount() {
-    accountsRepository.clearAccounts();
     BigDecimal amountToTransfer = new BigDecimal(50);
     this.accountsService.createAccount(new Account("Id-456"));
     try {
