@@ -6,6 +6,7 @@
       <a href="#about-the-project">About The Project</a>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#test">Test</a></li>
   </ol>
 </details>
 
@@ -63,6 +64,59 @@ I have mde below changes as a part of this requirement :-
 
 8. I have covered all the above changes in Junit test cases.
 
+
+### Test
+To start application use command:
+```sh
+gradlew test
+```
+src/test/java - tests sources
+
+To build the application use command:
+```sh
+gradlew clean build
+```
+
+### Start
+To start application use command:
+```sh
+gradlew run
+```
+
+#### Sample Request for Account creation
+
+```sh
+endpoint - POST http://localhost:18080/v1/accounts
+
+Account 1d-123
+{
+    "accountId": "Id-123",
+    "balance": "500"
+}
+
+Account 1d-456
+{
+    "accountId": "Id-456",
+    "balance": "0"
+}
+```
+
+#### Sample Request to get Account details
+
+```sh
+endpoint - GET http://localhost:18080/v1/accounts/Id-123
+```
+
+#### Sample Request for Transfer:
+
+```sh
+{
+    "fromAccountId": "Id-123",
+    "toAccountId": "Id-456",
+    "amount": 500
+}
+
+```
 
 
 
