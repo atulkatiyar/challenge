@@ -62,26 +62,12 @@ public class AccountsService {
         if (accountTo == null) {
             throw new AccountNotFoundException("Account id " + amountTransferRequest.getToAccountId() + " not found");
         }
-
-        WithdrawAmountRunnable withdrawAmount = new WithdrawAmountRunnable(
-                accountFrom, amountTransferRequest.getAmount(), transferAmountService);
-        DepositAmountRunnable depositAmount = new DepositAmountRunnable(accountTo, amountTransferRequest.getAmount(),
-                transferAmountService);
-
-        ExecutorService exe = Executors.newFixedThreadPool(2);
-        CompletableFuture<Void> withdrawalFuture = CompletableFuture.runAsync(withdrawAmount, exe);
-        try {
-            withdrawalFuture.get();
-        } catch (InterruptedException | InsufficientBalanceException | ExecutionException exception) {
-            throw new RuntimeException(exception);
-        }
-        CompletableFuture<Void> depositFuture = CompletableFuture.runAsync(depositAmount, exe);
-
-        try {
-            depositFuture.get();
-        } catch (InterruptedException | InsufficientBalanceException | ExecutionException exception) {
-            throw new RuntimeException(exception);
-        }
+        Thread withdrawThread = new Thread(new WithdrawAmountRunnable(
+                accountFrom, amountTransferRequest.getAmount(), transferAmountService));
+        Thread depositThread = new Thread(new DepositAmountRunnable(accountTo, amountTransferRequest.getAmount(),
+                transferAmountService));
+        withdrawThread.start();
+        depositThread.start();
     }
 
 }
