@@ -12,11 +12,4 @@ public interface AccountsRepository {
   Account getAccount(String accountId);
 
   void clearAccounts();
-
-  /**
-   * Method to transfer of money between accounts
-   *
-   * @param amountTransferRequest {@link AmountTransferRequest}
-   */
-  void transferAmount(AmountTransferRequest amountTransferRequest) throws AccountNotFoundException;
 }

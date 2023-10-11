@@ -4,14 +4,21 @@ import com.dws.challenge.domain.Account;
 import com.dws.challenge.dto.AmountTransferRequest;
 import com.dws.challenge.exception.AccountNotFoundException;
 import com.dws.challenge.exception.DuplicateAccountIdException;
+import com.dws.challenge.service.TransferAmountService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@AllArgsConstructor
 public class AccountsRepositoryInMemory implements AccountsRepository {
     private final Map<String, Account> accounts = new ConcurrentHashMap<>();
+
+    @Autowired
+    private TransferAmountService transferAmountService;
 
     @Override
     public void createAccount(Account account) throws DuplicateAccountIdException {
@@ -32,26 +39,5 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
         accounts.clear();
     }
 
-    /**
-     * API method to transfer money between accounts
-     *
-     * @param amountTransferRequest {@link AmountTransferRequest}
-     * @throws AccountNotFoundException Not Found Exception
-     */
-    @Override
-    public synchronized void transferAmount(AmountTransferRequest amountTransferRequest)
-            throws AccountNotFoundException {
-
-        Account accountFrom = accounts.get(amountTransferRequest.getFromAccountId());
-        Account accountTo = accounts.get(amountTransferRequest.getToAccountId());
-        if (accountFrom == null) {
-            throw new AccountNotFoundException("Account id " + amountTransferRequest.getFromAccountId() + " not found");
-        }
-        if (accountTo == null) {
-            throw new AccountNotFoundException("Account id " + amountTransferRequest.getToAccountId() + " not found");
-        }
-        accountFrom.withdrawAmount(amountTransferRequest.getAmount());
-        accountTo.depositAmount(amountTransferRequest.getAmount());
-    }
 
 }

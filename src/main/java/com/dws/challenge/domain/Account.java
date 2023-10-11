@@ -32,25 +32,4 @@ public class Account {
     this.accountId = accountId;
     this.balance = balance;
   }
-
-  /**
-   * Method to withdraw amount from the account
-   * @param amount amount to be withdrawn
-   * @throws InsufficientBalanceException Exception in case not enough balance
-   */
-  public void withdrawAmount(BigDecimal amount) throws InsufficientBalanceException {
-    if (balance.compareTo(amount) < 0  ) {
-      throw new InsufficientBalanceException("Insufficient funds in account " + accountId );
-    } else {
-      balance = balance.subtract(amount);
-    }
-  }
-
-  /**
-   * Method to deposit amount to the account
-   * @param amount amount to be deposited
-   */
-  public void depositAmount(BigDecimal amount) {
-    balance = balance.add(amount);
-  }
 }
