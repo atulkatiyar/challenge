@@ -56,18 +56,5 @@ public class AccountsController {
 
     }
 
-    @PostMapping(path = "/transfers")
-    public ResponseEntity<Object> transferMultipleAmount(@RequestBody @Validated AmountTransferRequest amountTransferRequest) {
-        log.info("Transferring amount from  account id {} to account id {} ", amountTransferRequest.getFromAccountId(),
-                amountTransferRequest.getToAccountId());
-        try {
-            this.accountsService.transferAmount(amountTransferRequest);
-        } catch (Exception exception) {
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
 
 }
