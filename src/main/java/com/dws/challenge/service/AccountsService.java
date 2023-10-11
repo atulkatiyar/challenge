@@ -76,6 +76,12 @@ public class AccountsService {
             throw new RuntimeException(exception);
         }
         CompletableFuture<Void> depositFuture = CompletableFuture.runAsync(depositAmount, exe);
+
+        try {
+            depositFuture.get();
+        } catch (InterruptedException | InsufficientBalanceException | ExecutionException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
 }

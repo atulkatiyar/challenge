@@ -73,7 +73,7 @@ class AccountsServiceTest {
     BigDecimal amountToTransfer = new BigDecimal(500);
     List<AmountTransferRequest> amountTransferRequests = new ArrayList<>();
 
-    // Here I am creating 10000 number of account transfer request to check if it will work on multi threaded environment
+    // Here I am creating 1000 number of account transfer request to check if it will work on multi threaded environment
     // Her from account and to Account are different everytime
     long startTime1 = System.nanoTime();
     for (int i = 1; i < 1001; i++) {
@@ -107,6 +107,7 @@ class AccountsServiceTest {
     this.accountsService.createAccount(new Account("Id-456"));
 
     // Here I am creating 1000 number of account transfer request to check if it will work on multi threaded environment
+    // here from account and to Account are same for every request
     long startTime = System.nanoTime();
     for (int i = 0; i < 1000; i++) {
       accountsService.transferAmount(AmountTransferRequest.builder().fromAccountId("Id-123")
